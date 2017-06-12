@@ -1,11 +1,13 @@
 import requests
 import operator
 
+
 class CoinDeskAPI:
     def __init__(self, currencies=None):
         self.currencies = currencies or ['USD', 'CNY']
         supporeted_currencies = list(
-            map(operator.itemgetter('currency'), self._supporeted_currencies()))
+            map(operator.itemgetter('currency'), self._supporeted_currencies())
+        )
         assert all(c in supporeted_currencies for c in self.currencies)
 
     def _supporeted_currencies(self):
@@ -18,7 +20,9 @@ class CoinDeskAPI:
         ).json()['bpi'][currency]['rate_float']
 
     def prices(self):
-        return {currency: self._price(currency) for currency in self.currencies}
+        return {
+            currency: self._price(currency) for currency in self.currencies
+        }
 
 
 if __name__ == '__main__':

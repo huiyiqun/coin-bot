@@ -18,6 +18,12 @@ with open('config.ini') as f:
 updater = Updater(token=config['main']['TOKEN'])
 
 
+def format_exchange(prices):
+    return '\n'.join([
+        f'{currency}: {exchange}' for currency, exchange in prices.items()
+    ])
+
+
 def start(bot, update):
     bot.send_message(chat_id=update.message.chat_id,
                      text="Hello!")
@@ -25,20 +31,21 @@ def start(bot, update):
 
 def price(bot, update):
     bot.send_message(chat_id=update.message.chat_id,
-                     text=api.prices()[0])
+                     text=format_exchange(api.prices()[0]))
 
 
 def subscribe(bot, update):
     reply_msg = bot.send_message(chat_id=update.message.chat_id,
-                                 text=api.prices()[0])
+                                 text=f'Following message will be updated:\n\n{format_exchange(api.prices()[0])}')
     subscribed_chat[update.message.chat_id] = reply_msg.message_id
 
 
 def polling_price(bot, job):
     prices, time = api.prices()
+    text = format_exchange(prices)
     for chat_id, msg_id in subscribed_chat.items():
         bot.edit_message_text(chat_id=chat_id, message_id=msg_id,
-                              text=str(prices) + ' updated at ' + time)
+                              text=f'{text}\n\nupdated at {time}')
 
 
 updater.dispatcher.add_handler(CommandHandler('start', start))

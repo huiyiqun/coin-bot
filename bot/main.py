@@ -25,20 +25,20 @@ def start(bot, update):
 
 def price(bot, update):
     bot.send_message(chat_id=update.message.chat_id,
-                     text=api.prices())
+                     text=api.prices()[0])
 
 
 def subscribe(bot, update):
     reply_msg = bot.send_message(chat_id=update.message.chat_id,
-                                 text=api.prices())
+                                 text=api.prices()[0])
     subscribed_chat[update.message.chat_id] = reply_msg.message_id
 
 
 def polling_price(bot, job):
-    prices = api.prices()
+    prices, time = api.prices()
     for chat_id, msg_id in subscribed_chat.items():
         bot.edit_message_text(chat_id=chat_id, message_id=msg_id,
-                              text=prices)
+                              text=str(prices) + ' updated at ' + time)
 
 
 updater.dispatcher.add_handler(CommandHandler('start', start))

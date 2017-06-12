@@ -19,10 +19,15 @@ class CoinDeskAPI:
             f'http://api.coindesk.com/v1/bpi/currentprice/{currency}.json'
         ).json()['bpi'][currency]['rate_float']
 
+    def _time(self):
+        return requests.get(
+            f'http://api.coindesk.com/v1/bpi/currentprice.json'
+        ).json()['time']['updated']
+
     def prices(self):
         return {
             currency: self._price(currency) for currency in self.currencies
-        }
+        }, self._time()
 
 
 if __name__ == '__main__':

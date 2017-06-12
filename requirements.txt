@@ -1,1 +1,2 @@
 python-telegram-bot==6.1b0
+requests

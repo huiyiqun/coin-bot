@@ -44,5 +44,5 @@ def polling_price(bot, job):
 updater.dispatcher.add_handler(CommandHandler('start', start))
 updater.dispatcher.add_handler(CommandHandler('price', price))
 updater.dispatcher.add_handler(CommandHandler('subscribe', subscribe))
-updater.job_queue.put(Job(polling_price, 60.0), next_t=0.0)
+updater.job_queue.put(Job(polling_price, 10.0), next_t=0.0)
 updater.start_polling()

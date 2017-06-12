@@ -5,7 +5,7 @@ from telegram.ext import Updater, CommandHandler, Job
 from .api.coindesk import CoinDeskAPI
 
 api = CoinDeskAPI(['CNY', 'USD'])
-subscribed_chat = set()
+subscribed_chat = {}
 
 logging.basicConfig(
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
@@ -29,13 +29,16 @@ def price(bot, update):
 
 
 def subscribe(bot, update):
-    subscribed_chat.add(update.message.chat_id)
+    reply_msg = bot.send_message(chat_id=update.message.chat_id,
+                                 text=api.prices())
+    subscribed_chat[update.message.chat_id] = reply_msg.message_id
 
 
 def polling_price(bot, job):
     prices = api.prices()
-    for chat_id in subscribed_chat:
-        bot.send_message(chat_id=chat_id, text=prices)
+    for chat_id, msg_id in subscribed_chat.items():
+        bot.edit_message_text(chat_id=chat_id, message_id=msg_id,
+                              text=prices)
 
 
 updater.dispatcher.add_handler(CommandHandler('start', start))

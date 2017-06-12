@@ -37,6 +37,11 @@ def price(bot, update):
 def subscribe(bot, update):
     reply_msg = bot.send_message(chat_id=update.message.chat_id,
                                  text=f'Following message will be updated:\n\n{format_exchange(api.prices()[0])}')
+    if update.message.chat_id in subscribed_chat:
+        # delete old subscription
+        bot.delete_message(
+            chat_id=update.message.chat_id,
+            message_id=subscribed_chat[update.message.chat_id])
     subscribed_chat[update.message.chat_id] = reply_msg.message_id
 
 

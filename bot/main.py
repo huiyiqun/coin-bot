@@ -35,10 +35,17 @@ def price(bot, update):
 
 
 def subscribe(bot, update):
-    bot.send_message(chat_id=update.message.chat_id,
-                     text='Subscribed')
     if not update.message.chat_id in subscribed_chat:
         subscribed_chat[update.message.chat_id] = None
+    bot.send_message(chat_id=update.message.chat_id,
+                     text='Subscribed')
+
+
+def unsubscribe(bot, update):
+    if update.message.chat_id in subscribed_chat:
+        del subscribed_chat[update.message.chat_id]
+    bot.send_message(chat_id=update.message.chat_id,
+                     text='Unsubscribed')
 
 
 def polling_price(bot, job):
@@ -58,5 +65,6 @@ def polling_price(bot, job):
 updater.dispatcher.add_handler(CommandHandler('start', start))
 updater.dispatcher.add_handler(CommandHandler('price', price))
 updater.dispatcher.add_handler(CommandHandler('subscribe', subscribe))
+updater.dispatcher.add_handler(CommandHandler('unsubscribe', unsubscribe))
 updater.job_queue.put(Job(polling_price, 10.0), next_t=0.0)
 updater.start_polling()

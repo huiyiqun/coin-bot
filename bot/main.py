@@ -35,22 +35,24 @@ def price(bot, update):
 
 
 def subscribe(bot, update):
-    reply_msg = bot.send_message(chat_id=update.message.chat_id,
-                                 text=f'Following message will be updated:\n\n{format_exchange(api.prices()[0])}')
-    if update.message.chat_id in subscribed_chat:
-        # delete old subscription
-        bot.delete_message(
-            chat_id=update.message.chat_id,
-            message_id=subscribed_chat[update.message.chat_id])
-    subscribed_chat[update.message.chat_id] = reply_msg.message_id
+    bot.send_message(chat_id=update.message.chat_id,
+                     text='Subscribed')
+    if not update.message.chat_id in subscribed_chat:
+        subscribed_chat[update.message.chat_id] = None
 
 
 def polling_price(bot, job):
     prices, time = api.prices()
     text = format_exchange(prices)
     for chat_id, msg_id in subscribed_chat.items():
-        bot.edit_message_text(chat_id=chat_id, message_id=msg_id,
-                              text=f'{text}\n\nupdated at {time}')
+        msg = bot.send_message(chat_id=chat_id, disable_notification=True,
+                               text=f'{text}\n\nupdated at {time}')
+        if subscribed_chat[chat_id] is not None:
+            # delete stale message
+            bot.delete_message(
+                chat_id=chat_id,
+                message_id=subscribed_chat[chat_id])
+        subscribed_chat[chat_id] = msg.message_id
 
 
 updater.dispatcher.add_handler(CommandHandler('start', start))
